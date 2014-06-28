@@ -1,7 +1,16 @@
+from flask.ext.sqlalchemy import get_debug_queries
 from app.core.models import Users, UserDetails
 from sqlalchemy import func, distinct, exists
+from config import DATABASE_QUERY_TIMEOUT
 from flask import abort, jsonify, url_for
 from app import app, db
+
+@app.after_request
+def after_request(response):
+    for query in get_debug_queries():
+        if query.duration >= DATABASE_QUERY_TIMEOUT:
+            app.logger.warning("SLOW QUERY: %s\nParameters: %s\nDuration: %fs\nContext: %s\n" % (query.statement, query.parameters, query.duration, query.context))
+    return response
 
 
 class DatabaseModel():

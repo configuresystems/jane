@@ -6,3 +6,5 @@ SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'app/core/models/jane_repository
 
 CSRF_ENABLED = True
 SECRET_KEY = 'special keys'
+
+DATABASE_QUERY_TIMEOUT = 0.5
