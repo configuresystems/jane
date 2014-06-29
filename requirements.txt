@@ -3,3 +3,6 @@ Flask-Actions==0.6.6
 Flask-SQLAlchemy==0.16
 SQLAlchemy==0.7.9
 sqlalchemy-migrate==0.7.2
+ansible=1.6.5
+pyrax==1.8.2
+passlib==1.6.2

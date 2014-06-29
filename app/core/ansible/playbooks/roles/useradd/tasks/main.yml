@@ -1,0 +1,7 @@
+---
+
+- debug: var=user
+- debug: var=user.user_details
+
+- name: create new user
+  user: name={{ user.username }} comment="{{ user.user_details[0].first }} {{ user.user_details[0].last }}" password={{ user.password }}

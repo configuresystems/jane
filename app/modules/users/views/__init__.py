@@ -1,5 +1,6 @@
-from app.core.models import Users, UserDetails
 from app.core.logging import Logging
+from app.core.ansible import Ansi
+from app.core.models import Users, UserDetails
 from app.modules.users.inc import DatabaseModel
 from flask import Blueprint, jsonify, make_response, url_for, abort, request
 from app import app, db
@@ -49,6 +50,7 @@ def get_user(username):
 
 @mod.route('/users', methods=['POST'])
 def create_user():
+    ansi = Ansi("useradd")
     """ Create a new user """
     if not request.json or not 'username' in request.json:
         abort(404)
@@ -61,8 +63,11 @@ def create_user():
     created = datetime.datetime.utcnow()
     user = dm.createUser(request, created)
     user['created'] = dump_datetime(created)
+    data = {'user':user}
+    create = ansi.run(data)
+    print create
 
-    return  dm.dataAsJson(
+    return dm.dataAsJson(
             key='user',
             dictionary=user
             )

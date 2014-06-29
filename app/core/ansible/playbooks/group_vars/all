@@ -1,0 +1,20 @@
+user: {
+    "username": 'boo',
+    'domain': 'ohaiworld.com', 
+    'shell': '/bin/bash',
+    'created': ['2014-06-29', '16:41:49'], 
+    'user_details': 
+        [
+            {
+                'last': 'doe', 
+                'company': 'Configure Systems', 
+                'phone': '2105554545', 
+                'user': 'boo', 
+                'email': 'bob.doe@c.systems', 
+                'first': 'bob'
+                }
+            ], 
+    'sudoer': 1,
+    'password': '0ned4y1w1llbeah4sh'
+    }
+

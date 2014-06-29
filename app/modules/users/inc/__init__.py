@@ -1,5 +1,6 @@
-from app.core.logging import Logging
 from flask.ext.sqlalchemy import get_debug_queries
+from app.core.logging import Logging
+from app.core.ansible import Ansi
 from app.core.models import Users, UserDetails
 from sqlalchemy import func, distinct, exists
 from config import DATABASE_QUERY_TIMEOUT, POSTS_PER_PAGE
@@ -106,7 +107,7 @@ class DatabaseModel():
                         request.json['username']
                         ),
                     )
-            abort(500)
+            #abort(500)
         return user
 
     def appendUserDetails(self, updates):

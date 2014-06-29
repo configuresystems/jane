@@ -1,0 +1,4 @@
+[local]
+localhost ansible_connection=local ansible_python_interpreter=/root/development/flask/bin/python
+
+#localhost              ansible_connection=local
