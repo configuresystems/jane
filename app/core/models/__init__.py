@@ -1,3 +1,4 @@
+from app.core.logging import Logging
 from app import db
 
 def dump_datetime(value):

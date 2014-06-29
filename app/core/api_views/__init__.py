@@ -20,3 +20,7 @@ def not_found(error):
 def conflict(error):
     return make_response(jsonify({'error':'Entity Exists'}), 409)
 
+@app.errorhandler(500)
+def internal_server_error(error):
+    return make_response(jsonify({'error':'Internal Server Error'}), 500)
+

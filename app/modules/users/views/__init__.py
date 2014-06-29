@@ -1,4 +1,5 @@
 from app.core.models import Users, UserDetails
+from app.core.logging import Logging
 from app.modules.users.inc import DatabaseModel
 from flask import Blueprint, jsonify, make_response, url_for, abort, request
 from app import app, db
@@ -24,13 +25,14 @@ def make_public_user(user):
                     )
         else:
             new_user[field] = user[field]
-
     return new_user
 
 @mod.route('/users', methods=['GET'])
-def get_users():
+@mod.route('/users/<int:page>', methods=['GET'])
+def get_users(page=1):
     """ Get a list of all the users that have been added """
     dm = DatabaseModel()
+    dm.page = page
     users = dm.getAllUsers(db_name="Users")
     return jsonify(users=[i.serialize for i in users])
 
@@ -98,4 +100,18 @@ def user_overview():
     """ get user overview """
     dm = DatabaseModel()
     count = dm.getCount()
+    return jsonify({'users':count})
+
+@mod.route('/logs/users', methods=['GET'])
+def user_overview():
+    """ get user overview """
+    dm = DatabaseModel()
+    logs = dm.getLogs()
+    return jsonify(logs=[i.serialize for i in logs])
+
+@mod.route('/logs/users/overview', methods=['GET'])
+def user_overview():
+    """ get user overview """
+    dm = DatabaseModel()
+    count = dm.getUserLogCount()
     return jsonify({'users':count})
