@@ -2,6 +2,7 @@ from flask.ext.sqlalchemy import get_debug_queries
 from app.core.logging import Logging
 from app.core.ansible import Ansi
 from app.core.models import Users, UserDetails
+from passlib.hash import sha512_crypt
 from sqlalchemy import func, distinct, exists
 from config import DATABASE_QUERY_TIMEOUT, POSTS_PER_PAGE
 from flask import abort, jsonify, url_for
@@ -40,6 +41,9 @@ class DatabaseModel():
         user = [i.serialize for i in fields]
         user = filter(lambda u: u['username'] == self.username, user)
         return user
+
+    def createShellPassword(self, password):
+        return sha512_crypt.encrypt(password)
 
     def getUsersFilteredQuery(self, kwargs):
         """

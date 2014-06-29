@@ -64,6 +64,7 @@ def create_user():
     user = dm.createUser(request, created)
     user['created'] = dump_datetime(created)
     data = {'user':user}
+    data['user']['password'] = dm.createShellPassword(request.json['password'])
     create = ansi.run(data)
     print create
 
