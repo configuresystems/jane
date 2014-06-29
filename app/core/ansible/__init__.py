@@ -16,7 +16,8 @@ class Ansi():
                 '-i',
                 'app/core/ansible/playbooks/inventory/hosts',
                 extra_vars,
-                yaml
+                yaml,
+                '-vvvv'
                 ]
         #cmd = ['ansible', 'all', '-m', 'setup']
         #for cmd in command[0]:

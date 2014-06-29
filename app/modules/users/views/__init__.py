@@ -76,18 +76,23 @@ def create_user():
 @mod.route('/users/<username>', methods=['PUT'])
 def update_task(username):
     """ update User information """
+    ansi = Ansi("useradd")
     dm = DatabaseModel(username)
+    print dm
     user = dm.getUserByUsername()
+    print user
     if len(user) == 0:
         abort(404)
     if not request.json:
+        print 'broken' + request.json
         abort(400)
-    for field in ['password', 'shell']:
-        if field in request.json and type(request.json[field]) is not unicode:
-            abort(400)
-    for field in ['sudoer']:
-        if field in request.json and type(request.json[field]) is not bool:
-            abort(400)
+    #for field in ['password', 'shell']:
+    #    if field in request.json: #and type(request.json[field]) is not unicode:
+    #        abort(400)
+    #for field in ['sudoer']:
+    #    if field in request.json: #and type(request.json[field]) is not bool:
+    #        abort(400)
+    print user
     user[0]['password'] = 'Password has been updated'
     user[0]['sudoer'] = request.json.get('sudoer', user[0]['sudoer'])
     user[0]['shell'] = request.json.get('shell', user[0]['shell'])
@@ -96,6 +101,14 @@ def update_task(username):
         if request.json[check]:
             updates[check] = request.json[check]
     dm.appendUserDetails(updates)
+    data = {'user': user[0]}
+    #data['user']['user_details'] = user[0]['user_details'][0]
+    print user
+    print data
+    if request.json['password']:
+        data['user']['password'] = dm.createShellPassword(request.json['password'])
+    create = ansi.run(data)
+    print create
     return  dm.dataAsJson(
             key='user',
             dictionary=user[0]
