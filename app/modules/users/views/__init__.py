@@ -14,13 +14,13 @@ def dump_datetime(value):
         return None
     return [value.strftime("%Y-%m-%d"), value.strftime("%H:%M:%S")]
 
-mod = Blueprint('api', __name__, url_prefix='/api')
+mod = Blueprint('users', __name__, url_prefix='/api')
 def make_public_user(user):
     new_user = {}
     for field in user:
         if field == 'username':
             new_user['uri'] = url_for(
-                    'api.get_user',
+                    'users.get_user',
                     username=user['username'],
                     _external=True
                     )
@@ -32,21 +32,26 @@ def make_public_user(user):
 @mod.route('/users/<int:page>', methods=['GET'])
 def get_users(page=1):
     """ Get a list of all the users that have been added """
-    dm = DatabaseModel()
-    dm.page = page
-    users = dm.getAllUsers(db_name=Users)
-    return jsonify(users=[i.serialize for i in users])
+    from app.core.api_views import Api
+    api = Api()
+    return api.getList(
+            db_name=Users,
+            page=page,
+            key='users'
+            )
 
 @mod.route('/users/<username>', methods=['GET'])
-def get_user(username):
+@mod.route('/users/<username>/<page>', methods=['GET'])
+def get_user(username, page=1):
     """ Get a specific user from the database """
-    dm = DatabaseModel(username)
-    user = dm.getUserByUsername()
-
-    if len(user) == 0:
-        abort(404)
-
-    return jsonify(user=user)
+    from app.core.api_views import Api
+    api = Api()
+    return api.getByFields(
+            db_name=Users,
+            page=page,
+            key='username',
+            kwargs={'username':username}
+            )
 
 @mod.route('/users', methods=['POST'])
 def create_user():
@@ -113,23 +118,17 @@ def update_task(username):
             dictionary=user[0]
             )
 
-@mod.route('/users/overview', methods=['GET'])
-def user_overview():
-    """ get user overview """
-    dm = DatabaseModel()
-    count = dm.getCount()
-    return jsonify({'users':count})
+@mod.route('/count/<db_name>', methods=['GET'])
+def get_counts(db_name):
+    from app.core.api_views import Api
+    api = Api()
+    key = db_name
+    if db_name == "users":
+        db_name = Users
+    if db_name == "logging":
+        db_name = Logging
+    return api.getCount(
+            db_name=db_name,
+            key=key
+            )
 
-@mod.route('/logs/users', methods=['GET'])
-def user_overview():
-    """ get user overview """
-    dm = DatabaseModel()
-    logs = dm.getLogs()
-    return jsonify(logs=[i.serialize for i in logs])
-
-@mod.route('/logs/users/overview', methods=['GET'])
-def user_overview():
-    """ get user overview """
-    dm = DatabaseModel()
-    count = dm.getUserLogCount()
-    return jsonify({'users':count})
