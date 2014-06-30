@@ -34,7 +34,7 @@ def get_users(page=1):
     """ Get a list of all the users that have been added """
     dm = DatabaseModel()
     dm.page = page
-    users = dm.getAllUsers(db_name="Users")
+    users = dm.getAllUsers(db_name=Users)
     return jsonify(users=[i.serialize for i in users])
 
 @mod.route('/users/<username>', methods=['GET'])
@@ -102,7 +102,6 @@ def update_task(username):
             updates[check] = request.json[check]
     dm.appendUserDetails(updates)
     data = {'user': user[0]}
-    #data['user']['user_details'] = user[0]['user_details'][0]
     print user
     print data
     if request.json['password']:

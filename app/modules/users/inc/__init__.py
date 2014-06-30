@@ -145,8 +145,8 @@ class DatabaseModel():
             return user
 
     def getAllUsers(self, db_name):
-        if db_name == "Users":
-            return Users.query.all()
+        #if db_name == "Users":
+        return db_name.query.all()
 
     def getCount(self):
         return db.session.query(Users.id).count()
