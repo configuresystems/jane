@@ -41,7 +41,7 @@ def get_users(page=1):
             )
 
 @mod.route('/users/<username>', methods=['GET'])
-@mod.route('/users/<username>/<page>', methods=['GET'])
+@mod.route('/users/<username>/<int:page>', methods=['GET'])
 def get_user(username, page=1):
     """ Get a specific user from the database """
     from app.core.api_views import Api

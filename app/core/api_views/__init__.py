@@ -43,12 +43,41 @@ class Api():
         return jsonify({key:[i.serialize for i in list]})
 
     def getList(self, db_name, page, key):
-        list = db_name.query.paginate(page, POSTS_PER_PAGE, False).items
-        return jsonify({key:[i.serialize for i in list]})
+        list = db_name.query.paginate(page, POSTS_PER_PAGE, False)
+        return jsonify({key:[i.serialize for i in list.items]})
 
     def getCount(self, db_name, key):
         list = db.session.query(db_name.id).count()
         return jsonify({key:list})
+
+    def create(self, db_name, db_join, relationship, key, **kwargs):
+        """
+        db_name == database name
+        relationship = status or username
+        """
+        try:
+            # inserting into db
+            to_pop = key + "_details"
+            d = kwargs.pop(to_pop)
+            insert = db_name(**kwargs)
+            db.session.add(insert)
+            db.session.commit()
+            id = db_name.query.get(insert.id)
+        except Exception, e:
+            print e
+            db.session.rollback()
+            id = db_name.query.get(relationship)
+        try:
+            # Get ID of the last insert
+            details = {}
+            # set relationship
+            append = db_join(**d)
+            db.session.add(append)
+            db.session.commit()
+        except Exception, e:
+            print e
+            db.session.rollback()
+            abort(500)
 
 app.register_blueprint(users)
 app.register_blueprint(logging)

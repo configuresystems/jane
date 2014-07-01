@@ -28,7 +28,7 @@ class DatabaseModel():
         for field in user:
             if field == 'username':
                 new_user['uri'] = url_for(
-                        'api.get_user',
+                        'users.get_user',
                         username=user['username'],
                         _external=True
                         )
@@ -95,13 +95,13 @@ class DatabaseModel():
             user['user_details'].append(user_details)
             details = UserDetails(**user_details)
             self.databaseInsert(details)
-            self.insertLog(
-                    type="add",
-                    action="create",
-                    message="created user {0}".format(
-                        request.json['username']
-                        ),
-                    )
+            #self.insertLog(
+            #        type="success",
+            #        action="create",
+            #        message="created user {0}".format(
+            #            request.json['username']
+            #            ),
+            #        )
         except:
             db.session.rollback()
             self.insertLog(
@@ -119,7 +119,7 @@ class DatabaseModel():
             db.session.query(Users).filter(Users.username==self.username).update(updates)
             db.session.commit()
             self.insertLog(
-                    type="add",
+                    type="success",
                     action="update",
                     message="{0} has been updated".format(
                         self.username,
