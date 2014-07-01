@@ -71,68 +71,82 @@ class DatabaseModel():
 
     def createUser(self, request, created):
         try:
-            user = {
-                    'username': request.json['username'],
-                    'domain': request.json.get('domain', ""),
-                    'shell': request.json['shell'],
-                    'sudoer': request.json['sudoer'],
-                    'password': request.json['password'],
-                    'created': created,
-                    }
-            insert = Users(**user)
-            self.databaseInsert(insert)
-            id = self.getInsertIDofUser(insert)
-            user['username'] = id.username
-            user['user_details'] = []
-            user_details = {
-                    'phone': request.json['user_details']['phone'],
-                    'company': request.json['user_details']['company'],
-                    'last': request.json['user_details']['last'],
-                    'first': request.json['user_details']['first'],
-                    'email': request.json['user_details']['email'],
-                    'user': id.username
-                    }
-            user['user_details'].append(user_details)
-            details = UserDetails(**user_details)
-            self.databaseInsert(details)
-            #self.insertLog(
-            #        type="success",
-            #        action="create",
-            #        message="created user {0}".format(
-            #            request.json['username']
-            #            ),
-            #        )
+            from app.core.api_views import Api
+            api = Api()
+            request.json['created'] = created
+            request.json['user_details']['user'] = request.json['username']
+            create = api.create(
+                    db_name=Users,
+                    db_join=UserDetails,
+                    relationship='username',
+                    key='user',
+                    **request.json)
+            from app.core.api_internal.views import Internal
+            internal = Internal()
+            internal.post(
+                     endpoint='logging',
+                     dictionary={
+                         "logging_details":{
+                             "module":"users",
+                             "action":"create",
+                             "message":"created user {0}".format(
+                                request.json['username']
+                                ),
+                             },
+                         "status":"success"}
+                     )
         except:
             db.session.rollback()
-            self.insertLog(
-                    type="error",
-                    action="create",
-                    message="could not create {0}".format(
-                        request.json['username']
-                        ),
-                    )
+            from app.core.api_internal.views import Internal
+            internal = Internal()
+            internal.post(
+                     endpoint='logging',
+                     dictionary={
+                         "logging_details":{
+                             "module":"users",
+                             "action":"create",
+                             "message":"an error occurred when create the user: {0}".format(
+                                request.json['username']
+                                ),
+                             },
+                         "status":"error"}
+                     )
             #abort(500)
-        return user
+        return request.json
 
     def appendUserDetails(self, updates):
         try:
             db.session.query(Users).filter(Users.username==self.username).update(updates)
             db.session.commit()
-            self.insertLog(
-                    type="success",
-                    action="update",
-                    message="{0} has been updated".format(
-                        self.username,
-                        ),
-                    )
+            from app.core.api_internal.views import Internal
+            internal = Internal()
+            internal.post(
+                     endpoint='logging',
+                     dictionary={
+                         "logging_details":{
+                             "module":"users",
+                             "action":"update",
+                             "message":"updated user {0}".format(
+                                request.json['username']
+                                ),
+                             },
+                         "status":"success"}
+                     )
         except:
-            self.insertLog(
-                    type="error",
-                    action="update",
-                    message="an error occurred when trying to update user {0}".format(
-                        self.username,
-                        ),
-                    )
+            from app.core.api_internal.views import Internal
+            internal = Internal()
+            internal.post(
+                     endpoint='logging',
+                     dictionary={
+                         "logging_details":{
+                             "module":"users",
+                             "action":"update",
+                             "message":"failed to update user {0}".format(
+                                request.json['username']
+                                ),
+                             },
+                         "status":"success"}
+                     )
             abort(500)
 
     def validateUser(self):
