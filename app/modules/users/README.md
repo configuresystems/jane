@@ -13,20 +13,20 @@ Request | URL Endpoint | Action
 ### User Models
 
 #### Users
-**username:** Unique identifier for users, *String Type*
-**password:** Password to log into the systems for the user, *String Type*
-**shell:** Valid shell for the user to use, *String Type*
-**domain:** Domain they manage, *String Type*
-**sudoer:** Set sudo user, *Boolean Type* 
-**user_details:** Relationship to UserDetails, identified by user, *String Type*
+* **username:** Unique identifier for users, *String Type*
+* **password:** Password to log into the systems for the user, *String Type*
+* **shell:** Valid shell for the user to use, *String Type*
+* **domain:** Domain they manage, *String Type*
+* **sudoer:** Set sudo user, *Boolean Type* 
+* **user_details:** Relationship to UserDetails, identified by user, *String Type*
 
 #### UserDetails
-**first** First name of the user, *String Type*
-**last** Last name of the user, *String Type*
-**company** Company name, *String Type*
-**phone** Phone Number, *String Type*
-**email** Email, *String Type*
-**user** Foreign Key of the Users model, Users.username, *String Type*
+* **first** First name of the user, *String Type*
+* **last** Last name of the user, *String Type*
+* **company** Company name, *String Type*
+* **phone** Phone Number, *String Type*
+* **email** Email, *String Type*
+* **user** Foreign Key of the Users model, Users.username, *String Type*
 
 
 ### Sample POST Request
@@ -106,7 +106,8 @@ $ curl http://23.253.96.98/api/users
         "password": "hawt d0gs and h4mbooger$",
         }
     ]
-}```
+}
+```
 
 
 ### Sample GET Request on user
@@ -135,4 +136,5 @@ $ curl http://23.253.96.98/api/users/jane
         "password": "0ned4y1w1llbeah4sh",
         },
     ]
-}```
+}
+```
