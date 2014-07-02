@@ -133,6 +133,7 @@ class DatabaseModel():
                          "status":"success"}
                      )
         except:
+            db.session.rollback()
             from app.core.api_internal.views import Internal
             internal = Internal()
             internal.post(
