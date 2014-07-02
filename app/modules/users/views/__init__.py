@@ -59,20 +59,12 @@ def create_user():
     """ Create a new user """
     if not request.json or not 'username' in request.json:
         abort(404)
-
     # Grab a user and check if it exists.  If it does, kick to 409 response
     dm = DatabaseModel(request.json['username'])
     if dm.validateUser():
         abort(409)
-
     created = datetime.datetime.utcnow()
     user = dm.createUser(request, created)
-    user['created'] = dump_datetime(created)
-    data = {'user':user}
-    data['user']['password'] = dm.createShellPassword(request.json['password'])
-    create = ansi.run(data)
-    print create
-
     return dm.dataAsJson(
             key='user',
             dictionary=user
@@ -81,41 +73,11 @@ def create_user():
 @mod.route('/users/<username>', methods=['PUT'])
 def update_task(username):
     """ update User information """
-    ansi = Ansi("useradd")
-    dm = DatabaseModel(username)
-    print dm
-    user = dm.getUserByUsername()
-    print user
-    if len(user) == 0:
-        abort(404)
-    if not request.json:
-        print 'broken' + request.json
-        abort(400)
-    #for field in ['password', 'shell']:
-    #    if field in request.json: #and type(request.json[field]) is not unicode:
-    #        abort(400)
-    #for field in ['sudoer']:
-    #    if field in request.json: #and type(request.json[field]) is not bool:
-    #        abort(400)
-    print user
-    user[0]['password'] = 'Password has been updated'
-    user[0]['sudoer'] = request.json.get('sudoer', user[0]['sudoer'])
-    user[0]['shell'] = request.json.get('shell', user[0]['shell'])
-    updates = {}
-    for check in request.json:
-        if request.json[check]:
-            updates[check] = request.json[check]
-    dm.appendUserDetails(updates)
-    data = {'user': user[0]}
-    print user
-    print data
-    if request.json['password']:
-        data['user']['password'] = dm.createShellPassword(request.json['password'])
-    create = ansi.run(data)
-    print create
+    dm = DatabaseModel(username=username)
+    user = dm.appendUserDetails(request)
     return  dm.dataAsJson(
             key='user',
-            dictionary=user[0]
+            dictionary=user
             )
 
 @mod.route('/count/<db_name>', methods=['GET'])

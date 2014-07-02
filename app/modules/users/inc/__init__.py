@@ -18,6 +18,13 @@ def after_request(response):
     return response
 
 
+def dump_datetime(value):
+    """ Deserialize datetime object into string form for JSON processing. """
+    if value is None:
+        return None
+    return [value.strftime("%Y-%m-%d"), value.strftime("%H:%M:%S")]
+
+
 class DatabaseModel():
     def __init__(self, username=None):
         self.username = username
@@ -81,6 +88,9 @@ class DatabaseModel():
                     relationship='username',
                     key='user',
                     **request.json)
+            request.json['created'] = dump_datetime(created)
+            request.json['password'] = self.createShellPassword(request.json['password'])
+            Ansi("useradd").run({'user':request.json})
             from app.core.api_internal.views import Internal
             internal = Internal()
             internal.post(
@@ -111,15 +121,39 @@ class DatabaseModel():
                              },
                          "status":"error"}
                      )
-            #abort(500)
+            abort(500)
         return request.json
 
-    def appendUserDetails(self, updates):
+    def appendUserDetails(self, request):
         try:
-            db.session.query(Users).filter(Users.username==self.username).update(updates)
-            db.session.commit()
             from app.core.api_internal.views import Internal
             internal = Internal()
+            user = internal.get(endpoint='users', field=self.username)['username'][0]
+            print user
+            if len(user) == 0:
+                abort(404)
+            if not request.json:
+                print 'broken' + request.json
+                abort(400)
+            #for field in ['password', 'shell']:
+            #    if field in request.json: #and type(request.json[field]) is not unicode:
+            #        abort(400)
+            #for field in ['sudoer']:
+            #    if field in request.json: #and type(request.json[field]) is not bool:
+            #        abort(400)
+            user['password'] = 'Password has been updated'
+            user['sudoer'] = request.json.get('sudoer', user['sudoer'])
+            user['shell'] = request.json.get('shell', user['shell'])
+            updates = {}
+            for check in request.json:
+                if request.json[check]:
+                    updates[check] = request.json[check]
+            db.session.query(Users).filter(Users.username==self.username).update(updates)
+            db.session.commit()
+            user['user_details'] = user['user_details'][0]
+            if request.json['password']:
+                user['password'] = self.createShellPassword(request.json['password'])
+            update = Ansi("useradd").run({'user':user})
             internal.post(
                      endpoint='logging',
                      dictionary={
@@ -127,12 +161,14 @@ class DatabaseModel():
                              "module":"users",
                              "action":"update",
                              "message":"updated user {0}".format(
-                                request.json['username']
+                                self.username
                                 ),
                              },
                          "status":"success"}
                      )
-        except:
+            return user
+        except Exception, e:
+            print e
             db.session.rollback()
             from app.core.api_internal.views import Internal
             internal = Internal()
@@ -143,12 +179,12 @@ class DatabaseModel():
                              "module":"users",
                              "action":"update",
                              "message":"failed to update user {0}".format(
-                                request.json['username']
+                                self.username
                                 ),
                              },
                          "status":"success"}
                      )
-            abort(500)
+            #abort(500)
 
     def validateUser(self):
         if Users.query.filter(Users.username == self.username).count() > 0:
