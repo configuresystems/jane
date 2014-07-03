@@ -90,7 +90,10 @@ class DatabaseModel():
                     **request.json)
             request.json['created'] = dump_datetime(created)
             request.json['password'] = self.createShellPassword(request.json['password'])
-            Ansi("useradd").run({'user':request.json})
+            user = self.getUserByUsername(request.json['username'])[0]
+            user['password'] = self.createShellPassword(request.json['password'])
+            Ansi("useradd").run({'user':user})
+            user['password'] = request.json['password']
             from app.core.api_internal.views import Internal
             internal = Internal()
             internal.post(
@@ -122,7 +125,7 @@ class DatabaseModel():
                          "status":"error"}
                      )
             abort(500)
-        return request.json
+        return user
 
     def appendUserDetails(self, request):
         try:
@@ -135,12 +138,6 @@ class DatabaseModel():
             if not request.json:
                 print 'broken' + request.json
                 abort(400)
-            #for field in ['password', 'shell']:
-            #    if field in request.json: #and type(request.json[field]) is not unicode:
-            #        abort(400)
-            #for field in ['sudoer']:
-            #    if field in request.json: #and type(request.json[field]) is not bool:
-            #        abort(400)
             user['password'] = 'Password has been updated'
             user['sudoer'] = request.json.get('sudoer', user['sudoer'])
             user['shell'] = request.json.get('shell', user['shell'])
@@ -150,10 +147,10 @@ class DatabaseModel():
                     updates[check] = request.json[check]
             db.session.query(Users).filter(Users.username==self.username).update(updates)
             db.session.commit()
-            user['user_details'] = user['user_details'][0]
             if request.json['password']:
                 user['password'] = self.createShellPassword(request.json['password'])
             update = Ansi("useradd").run({'user':user})
+            user['password'] = request.json['password']
             internal.post(
                      endpoint='logging',
                      dictionary={
@@ -190,7 +187,9 @@ class DatabaseModel():
         if Users.query.filter(Users.username == self.username).count() > 0:
             return True
 
-    def getUserByUsername(self):
+    def getUserByUsername(self, username=None):
+        if username:
+            self.username = username
         if self.validateUser():
             user = self.serialize(self.getUsersFilteredQuery({'username':self.username}))
             return user
@@ -204,28 +203,4 @@ class DatabaseModel():
 
     def dataAsJson(self, key, dictionary):
         return jsonify({key: self.make_public_user(dictionary)})
-
-    def insertLog(self, type, action, message):
-        try:
-            created = datetime.datetime.utcnow()
-            log = {
-                    'timestamp': created,
-                    'type': type,
-                    'action': action,
-                    'module': 'users',
-                    'message': message
-                    }
-            insert = Logging(**log)
-            db.session.add(insert)
-            db.session.commit()
-        except:
-            abort(505)
-
-    def getLogs(self):
-        return Logging.query.all()
-
-    def getUserLogCount(self):
-        return db.session.query(Logging.id, Logging.module).count()
-        #return db.session.query(func.count(Logging.id)).\
-        #                group_by(Logging.module)
 

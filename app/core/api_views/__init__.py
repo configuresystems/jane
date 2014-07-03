@@ -88,6 +88,7 @@ def index():
 
 @app.errorhandler(400)
 def bad_request(error):
+    db.session.rollback()
     return make_response(jsonify({'error':'Bad Request'}), 400)
 
 @app.errorhandler(404)
@@ -100,5 +101,6 @@ def conflict(error):
 
 @app.errorhandler(500)
 def internal_server_error(error):
+    db.session.rollback()
     return make_response(jsonify({'error':'Internal Server Error'}), 500)
 
