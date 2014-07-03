@@ -1,4 +1,5 @@
 from app.core.logging import Logging
+from app.modules.domains.models import Domains, DomainDetails
 from app import db
 
 def dump_datetime(value):
@@ -37,7 +38,7 @@ class Users(db.Model):
                 'sudoer': self.sudoer,
                 # This is an example how to deal with Many2Many relations
                 'user_details'  : self.serialize_many2many
-                                                                                     }
+                }
     @property
     def serialize_many2many(self):
         """

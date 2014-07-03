@@ -1,4 +1,5 @@
 from app.modules.users.views import mod as users
+from app.modules.domains.views import mod as domains
 from app.core.logging.views import mod as logging
 from app.core.logging import Logging
 from app.core.models import Users, UserDetails
@@ -80,6 +81,7 @@ class Api():
             abort(500)
 
 app.register_blueprint(users)
+app.register_blueprint(domains)
 app.register_blueprint(logging)
 
 @app.route('/')
