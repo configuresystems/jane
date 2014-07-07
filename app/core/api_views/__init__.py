@@ -45,7 +45,9 @@ class Api():
 
     def getList(self, db_name, page, key):
         list = db_name.query.paginate(page, POSTS_PER_PAGE, False)
-        return jsonify({key:[i.serialize for i in list.items]})
+        list = {key:[i.serialize for i in list.items]}
+        list['count'] = db.session.query(db_name.id).count()
+        return jsonify(list)
 
     def getCount(self, db_name, key):
         list = db.session.query(db_name.id).count()

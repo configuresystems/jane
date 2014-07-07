@@ -2,6 +2,8 @@ from app.core.logging import Logging
 from app.core.ansible import Ansi
 from app.core.models import Users, UserDetails
 from app.modules.users.inc import DatabaseModel
+from passlib.hash import sha512_crypt
+from app.core.common import ModuleController
 from flask import Blueprint, jsonify, make_response, url_for, abort, request
 from app import app, db
 import datetime
@@ -55,17 +57,23 @@ def get_user(username, page=1):
 
 @mod.route('/users', methods=['POST'])
 def create_user():
-    ansi = Ansi("useradd")
+    #ansi = Ansi("useradd")
     """ Create a new user """
     if not request.json or not 'username' in request.json:
         abort(404)
     # Grab a user and check if it exists.  If it does, kick to 409 response
-    dm = DatabaseModel(request.json['username'])
-    if dm.validateUser():
-        abort(409)
+    mc = ModuleController(
+            main_db=Users,
+            details_db=UserDetails,
+            relationship='username',
+            key='user',
+            name=request.json['username']
+            )
     created = datetime.datetime.utcnow()
-    user = dm.createUser(request, created)
-    return dm.dataAsJson(
+    request.json['password'] = sha512_crypt.encrypt(request.json['password'])
+    user = mc.create(request, created)
+    Ansi("useradd").run({'user':user})
+    return mc.dataAsJson(
             key='user',
             dictionary=user
             )

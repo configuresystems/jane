@@ -2,7 +2,7 @@ from app.core.logging import Logging
 from app.core.ansible import Ansi
 from app.modules.domains.models import Domains, DomainDetails
 from app.modules.users.inc import DatabaseModel
-from app.modules.domains.inc import ModuleController
+from app.core.common import ModuleController
 from flask import Blueprint, jsonify, make_response, url_for, abort, request
 from app import app, db
 import datetime
@@ -66,10 +66,8 @@ def create_domain():
             details_db=DomainDetails,
             relationship='domain_name',
             key='domain',
-            domain_name=request.json['domain_name']
+            name=request.json['domain_name']
             )
-    #if dm.validateUser():
-    #    abort(409)
     created = datetime.datetime.utcnow()
     domain = mc.create(request, created)
     return mc.dataAsJson(
@@ -77,15 +75,15 @@ def create_domain():
             dictionary=domain
             )
 
-@mod.route('/users/<username>', methods=['PUT'])
-def update_task(username):
-    """ update User information """
-    dm = DatabaseModel(username=username)
-    #user = dm.appendUserDetails(request)
-    return  dm.dataAsJson(
-            key='user',
-            dictionary=user
-            )
+#@mod.route('/users/<username>', methods=['PUT'])
+#def update_task(username):
+#    """ update User information """
+#    dm = DatabaseModel(username=username)
+#    #user = dm.appendUserDetails(request)
+#    return  dm.dataAsJson(
+#            key='user',
+#            dictionary=user
+#            )
 
 @mod.route('/count/<db_name>', methods=['GET'])
 def get_counts(db_name):

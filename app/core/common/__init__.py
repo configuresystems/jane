@@ -26,14 +26,14 @@ def dump_datetime(value):
 
 
 class ModuleController():
-    def __init__(self, main_db, details_db, key, relationship, domain_name):
+    def __init__(self, main_db, details_db, key, relationship, name):
         self.main_db = main_db
         self.details_db = details_db
         self.key = key
         self.relationship = relationship
         self.page = 1
         self.field = None
-        self.domain_name = domain_name
+        self.name = name
 
     def make_public_user(self, user):
         new_user = {}
@@ -49,23 +49,19 @@ class ModuleController():
 
         return new_user
 
-    def make_public_domain(self, domain):
-        new_domain = {}
-        for field in domain:
-            if field == 'domain_name':
+    def make_public_domain(self, fields):
+        uri = "{0}s.get_{0}".format(self.key)
+        new = {}
+        for field in fields:
+            if field == self.relationship:
                 new_domain['uri'] = url_for(
-                        'domains.get_domain',
-                        domain_name=domain['domain_name'],
+                        uri,
+                        name=fields[self.relationship],
                         _external=True
                         )
             else:
                 new_domain[field] = domain[field]
         return new_domain
-
-    def serialize(self, fields):
-        domain = [i.serialize for i in fields]
-        domain = filter(lambda d: d['domain_name'] == self.domain_name, domain)
-        return domain
 
     def getFilteredQuery(self, kwargs):
         """
@@ -73,17 +69,32 @@ class ModuleController():
         """
         return self.main_db.query.filter_by(**kwargs).paginate(self.page, POSTS_PER_PAGE, False).items
 
-    def getInsertIDofField(self, field):
-        id = self.main_db.query.get(field.id)
-        return id
+    def serialize(self, fields):
+        domain = [i.serialize for i in fields]
+        domain = filter(lambda d: d[self.relationship] == self.name, domain)
+        return domain
 
-    def databaseInsert(self, data):
-        try:
-            db.session.add(data)
-            db.session.commit()
-        except:
-            db.session.rollback()
-            abort(500)
+    def dataAsJson(self, key, dictionary):
+        return jsonify({key: self.make_public_user(dictionary)})
+
+    def getByField(self, field=None):
+        if field:
+            self.field = field
+        return self.serialize(self.getFilteredQuery({self.relationship:self.field}))
+
+    def log(self, module, action, message, status):
+        from app.core.api_internal.views import Internal
+        internal = Internal()
+        internal.post(
+                 endpoint='logging',
+                 dictionary={
+                     "logging_details":{
+                         "module":module,
+                         "action":action,
+                         "message":message,
+                         },
+                     "status":status}
+                 )
 
     def create(self, request, created):
         try:
@@ -101,37 +112,25 @@ class ModuleController():
             request.json['created'] = dump_datetime(created)
             domain = self.getByField(field=request.json[self.relationship])[0]
             #Ansi("domain").run({'user':user})
-            from app.core.api_internal.views import Internal
-            internal = Internal()
-            internal.post(
-                     endpoint='logging',
-                     dictionary={
-                         "logging_details":{
-                             "module":"domains",
-                             "action":"create",
-                             "message":"created domain {0}".format(
-                                request.json[self.relationship]
-                                ),
-                             },
-                         "status":"success"}
-                     )
+            self.log(
+                    status='success',
+                    module=self.key,
+                    action='create',
+                    message="New {0} created: {1}".format(
+                        self.key, self.name
+                        )
+                    )
             return domain
         except Exception, e:
             db.session.rollback()
-            from app.core.api_internal.views import Internal
-            internal = Internal()
-            internal.post(
-                     endpoint='logging',
-                     dictionary={
-                         "logging_details":{
-                             "module":"domains",
-                             "action":"create",
-                             "message":"an error occurred when create the domain: {0} - {1}".format(
-                                request.json[self.relationship, e]
-                                ),
-                             },
-                         "status":"error"}
-                     )
+            self.log(
+                    status='error',
+                    module=self.key,
+                    action='create',
+                    message="New {0} failed to create: {1} :::: {2}".format(
+                        self.key, self.name, e
+                        )
+                    )
             abort(500)
 
 #    def appendUserDetails(self, request):
@@ -191,25 +190,3 @@ class ModuleController():
 #                         "status":"success"}
 #                     )
 #            #abort(50
-
-    def validateUser(self):
-        if Users.query.filter(Users.username == self.username).count() > 0:
-            return True
-
-    def getByField(self, field=None):
-        if field:
-            self.field = field
-        #if self.validateUser():
-        return self.serialize(self.getFilteredQuery({self.key+"_name":self.field}))
-        #    return user
-
-    def getAllUsers(self, db_name):
-        #if db_name == "Users":
-        return db_name.query.all()
-
-    def getCount(self):
-        return db.session.query(Users.id).count()
-
-    def dataAsJson(self, key, dictionary):
-        return jsonify({key: self.make_public_domain(dictionary)})
-
