@@ -1,0 +1,14 @@
+---
+
+- name: create domain document root
+  file: path=/var/www/vhosts/{{ domain.domain_name }}/{{ item }} owner={{ domain.domain_details[0].owner }} group={{ domain.domain_details[0].group }} mode=0775 state=directory
+  with_items:
+    - "conf"
+    - "etc"
+    - "ssl"
+    - "httpdocs"
+    - "cgi-bin"
+    - "logs"
+
+- name: add domains virtual host file
+  template: src=vhost.conf.j2 dest=/var/www/vhosts/{{ domain.domain_name }}/conf/vhost.conf

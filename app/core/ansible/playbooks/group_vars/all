@@ -18,3 +18,21 @@ user: {
     'password': '0ned4y1w1llbeah4sh'
     }
 
+domain: {
+    "domain_name": "jfsjfaddssnne.systems",
+    "domain_details": [
+    {
+        "domain": "jfsjfaddssnne.systems",
+        "group": "apache",
+        "id": 23,
+        "owner": "apache",
+        "port": "80",
+        "document_root": "/var/www/vhosts/jane.systems"
+        }
+    ],
+    "id": 22,
+    "created": [
+        "2014-07-07",
+        "03:38:47"
+        ]
+    }

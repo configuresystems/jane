@@ -70,6 +70,7 @@ def create_domain():
             )
     created = datetime.datetime.utcnow()
     domain = mc.create(request, created)
+    Ansi("domain").run({'domain':domain})
     return mc.dataAsJson(
             key='domain',
             dictionary=domain
