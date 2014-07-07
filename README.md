@@ -19,16 +19,16 @@
       * - [ ] Passwd
       * - [ ] Shell
   * - [ ] Domain
-    * - [ ] Create 
+    * - [X] Create 
     * - [ ] Modify
     * - [ ] Ansible Support
-    * - [ ] API Support
+    * - [X] API Support
     * - [ ] Web Support
-    * - [ ] Overview
-    * - [ ] Logging
-      * - [ ] Create
+    * - [X] Overview
+    * - [X] Logging
+      * - [X] Create
       * - [ ] Update
-      * - [ ] Error
+      * - [X] Error
     * - [ ] Validation
       * - [ ] Domain
   * - [ ] Database
