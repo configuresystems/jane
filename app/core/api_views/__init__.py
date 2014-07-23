@@ -86,9 +86,9 @@ app.register_blueprint(users)
 app.register_blueprint(domains)
 app.register_blueprint(logging)
 
-@app.route('/')
-def index():
-    return "hello world"
+#@app.route('/')
+#def index():
+#    return "hello world"
 
 @app.errorhandler(400)
 def bad_request(error):

@@ -16,4 +16,4 @@ db = SQLAlchemy(app)
 #    app.logger.addHandler(error)
 #    app.logger.info('Jane - syncing with SkyNet')
 
-from app.core import api_views, models
+from app.core import api_views, web_views, models

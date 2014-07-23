@@ -1,3 +1,4 @@
+from config import HOST, PORT
 import requests
 import json
 
@@ -7,7 +8,11 @@ class Internal():
         pass
 
     def post(self, endpoint, dictionary):
-        url = "http://23.253.96.98:80/api/{0}".format(endpoint)
+        url = "http://{0}:{1}/api/{2}".format(
+                HOST,
+                PORT,
+                endpoint
+                )
         headers = {'Content-type': 'application/json'}
         req = requests.post(
                 url,
@@ -17,7 +22,9 @@ class Internal():
         return req
 
     def get(self, endpoint, field):
-        url = "http://23.253.96.98:80/api/{0}/{1}".format(
+        url = "http://{0}:{1}/api/{2}/{3}".format(
+                HOST,
+                PORT,
                 endpoint,
                 field
                 )
@@ -30,7 +37,11 @@ class Internal():
         return req
 
     def get_all(self, endpoint):
-        url = "http://23.253.96.98:80/api/{0}".format(endpoint)
+        url = "http://{0}:{1}/api/{2}".format(
+                HOST,
+                PORT,
+                endpoint
+                )
         headers = {'Content-type': 'application/json'}
         req = requests.get(
                 url,

@@ -9,3 +9,6 @@ SECRET_KEY = 'special keys'
 
 DATABASE_QUERY_TIMEOUT = 0.5
 POSTS_PER_PAGE = 25
+THEME = "sb-admin-2"
+HOST = "23.253.96.98"
+PORT = "80"
