@@ -1,8 +1,10 @@
 from app.modules.users.views import mod as users
 from app.modules.domains.views import mod as domains
+from app.modules.overview.views import mod as overview
 from app.core.logging.views import mod as logging
 from app.core.logging import Logging
 from app.core.models import Users, UserDetails
+from app.modules.domains.models import Domains, DomainDetails
 from sqlalchemy import func, distinct, exists
 from config import DATABASE_QUERY_TIMEOUT, POSTS_PER_PAGE
 from flask import make_response, jsonify, abort
@@ -37,11 +39,13 @@ class Api():
                             POSTS_PER_PAGE,
                             False,
                             ).items
+
+            list = {key:[i.serialize for i in list]}
         except Exception, e:
             abort(500)
         if len(list) == 0:
             abort(404)
-        return jsonify({key:[i.serialize for i in list]})
+        return jsonify(list)
 
     def getList(self, db_name, page, key):
         list = db_name.query.paginate(page, POSTS_PER_PAGE, False)
@@ -52,6 +56,35 @@ class Api():
     def getCount(self, db_name, key):
         list = db.session.query(db_name.id).count()
         return jsonify({key:list})
+
+    def getOverviewCount(self, db_name, key, field):
+        error = db.session.query(db_name.id).filter(
+                db_name.status_code=='error').count()
+        success = db.session.query(db_name.id).filter(
+                db_name.status_code=='success').count()
+        users = db.session.query(Users.id).count()
+        domains = db.session.query(Domains.id).count()
+        to_return = {
+                'logs': [
+                    {
+                        'name': 'domains',
+                        'count': domains
+                        },
+                    {
+                        'name': 'users',
+                        'count': users,
+                        },
+                    {
+                        'name': 'success',
+                        'count': success
+                        },
+                    {
+                        'name': 'error',
+                        'count': error,
+                        },
+                    ]
+                }
+        return jsonify(to_return)
 
     def create(self, db_name, db_join, relationship, key, **kwargs):
         """
@@ -85,6 +118,7 @@ class Api():
 app.register_blueprint(users)
 app.register_blueprint(domains)
 app.register_blueprint(logging)
+app.register_blueprint(overview)
 
 #@app.route('/')
 #def index():

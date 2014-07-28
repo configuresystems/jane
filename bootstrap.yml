@@ -1,0 +1,22 @@
+---
+
+- host: local
+  user: root
+  tasks:
+  - name: install RedHat dependancies
+    yum: pkg={{ item }} state=installed
+    with_items:
+    - git-core
+    - gcc
+    - python-setuptools
+    - python-crypto
+    - m2crypto
+    - python-devel
+  
+  - name: create install directory
+    file: path=/usr/local/jane owner=root group=root mode=0755 state=directory
+
+  - name: create virtualenv
+    shell: python virutalenv.py /usr/local/jane/flask
+
+  - name: 

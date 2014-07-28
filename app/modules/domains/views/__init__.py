@@ -3,11 +3,14 @@ from app.core.ansible import Ansi
 from app.modules.domains.models import Domains, DomainDetails
 from app.modules.users.inc import DatabaseModel
 from app.core.common import ModuleController
-from flask import Blueprint, jsonify, make_response, url_for, abort, request
+from flask import Blueprint, jsonify, make_response, url_for, abort, request, render_template
 from app import app, db
 import datetime
 import json
 
+
+mod = Blueprint('domains', __name__, url_prefix='/api')
+web = Blueprint('web_domains', __name__)
 
 def dump_datetime(value):
     """ Deserialize datetime object into string form for JSON processing. """
@@ -15,7 +18,6 @@ def dump_datetime(value):
         return None
     return [value.strftime("%Y-%m-%d"), value.strftime("%H:%M:%S")]
 
-mod = Blueprint('domains', __name__, url_prefix='/api')
 def make_public_domain(domain):
     new_domain = {}
     for field in domain:
@@ -99,3 +101,19 @@ def get_counts(db_name):
             key=key
             )
 
+@web.route('/domains', methods=['GET'])
+@web.route('/domains/<int:page>', methods=['GET'])
+def domains(page=1):
+    """ Get a list of all the users that have been added """
+    return render_template(
+            'domain_list.html',
+            title="Domains",
+            )
+
+@web.route('/domains/<domain>', methods=['GET'])
+def domain(domain):
+    """ Get a list of all the users that have been added """
+    return render_template(
+            'domain_details.html',
+            title=domain,
+            )

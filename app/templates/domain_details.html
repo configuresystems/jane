@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+    {% block content %}
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">{{ title }}</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Details
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="domain" class="list-group">
+                                <!-- ko foreach: domain -->
+                                    <a class="list-group-item" href="#">
+                                        <i class="fa fa-globe fa-fw"></i>
+                                        Domain
+                                        <span class="pull-right medium">
+                                            <em data-bind="text: name"></em>
+                                        </span>
+                                    </a>
+                                    <a class="list-group-item" href="#">
+                                        <i class="fa fa-globe fa-fw"></i>
+                                        Document Root
+                                        <span class="pull-right medium">
+                                            <em data-bind="text: document_root"></em>
+                                        </span>
+                                    </a>
+                                    <a class="list-group-item" href="#">
+                                        <i class="fa fa-user fa-fw"></i>
+                                        Owner
+                                        <span class="pull-right medium">
+                                            <em data-bind="text: owner"></em>
+                                        </span>
+                                    </a>
+                                    <a class="list-group-item" href="#">
+                                        <i class="fa fa-users fa-fw"></i>
+                                        Group
+                                        <span class="pull-right medium">
+                                            <em data-bind="text: group"></em>
+                                        </span>
+                                    </a>
+                                    <a class="list-group-item" href="#">
+                                        <i class="fa fa-globe fa-fw"></i>
+                                        Port
+                                        <span class="pull-right medium">
+                                            <em data-bind="text: port"></em>
+                                        </span>
+                                    </a>
+                                    <a class="list-group-item" href="#">
+                                        <i class="fa fa-globe fa-fw"></i>
+                                        Created
+                                        <span class="pull-right medium">
+                                            <em data-bind="text: created"></em>
+                                        </span>
+                                    </a>
+                                    <a class="list-group-item" href="#">
+                                        <i class="fa fa-globe fa-fw"></i>
+                                        Website
+                                        <span class="pull-right medium">
+                                            <em data-bind="text: domain_url"></em>
+                                        </span>
+                                    </a>
+                                <!-- /ko -->
+                            </div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+            <script src="{{ url_for('static', filename='js/domain_details.js') }}"></script>
+{% endblock %}

@@ -4,19 +4,20 @@ from app.core.models import Users, UserDetails
 from app.modules.users.inc import DatabaseModel
 from passlib.hash import sha512_crypt
 from app.core.common import ModuleController
-from flask import Blueprint, jsonify, make_response, url_for, abort, request
+from flask import Blueprint, jsonify, make_response, url_for, abort, request, render_template
 from app import app, db
 import datetime
 import json
 
 
+mod = Blueprint('users', __name__, url_prefix='/api')
+web = Blueprint('web_users', __name__)
 def dump_datetime(value):
     """ Deserialize datetime object into string form for JSON processing. """
     if value is None:
         return None
     return [value.strftime("%Y-%m-%d"), value.strftime("%H:%M:%S")]
 
-mod = Blueprint('users', __name__, url_prefix='/api')
 def make_public_user(user):
     new_user = {}
     for field in user:
@@ -102,3 +103,19 @@ def get_counts(db_name):
             key=key
             )
 
+@web.route('/users', methods=['GET'])
+@web.route('/users/<int:page>', methods=['GET'])
+def users(page=1):
+    """ Get a list of all the users that have been added """
+    return render_template(
+            'user_list.html',
+            title="Users",
+            )
+
+@web.route('/users/<user>', methods=['GET'])
+def user(user):
+    """ Get a list of all the users that have been added """
+    return render_template(
+            'user_details.html',
+            title=user,
+            )

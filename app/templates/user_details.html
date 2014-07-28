@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+    {% block content %}
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">{{ title }}</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Details
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="user" class="list-group">
+                                <!-- ko foreach: user -->
+                                    <a class="list-group-item" href="#">
+                                        <i class="fa fa-user fa-fw"></i>
+                                        Username
+                                        <span class="pull-right medium">
+                                            <em data-bind="text: user"></em>
+                                        </span>
+                                    </a>
+                                    <a class="list-group-item" href="#">
+                                        <i class="fa fa-globe fa-fw"></i>
+                                        Domain
+                                        <span class="pull-right medium">
+                                            <em data-bind="text: domain"></em>
+                                        </span>
+                                    </a>
+                                    <a class="list-group-item" href="#">
+                                        <i class="fa fa-user fa-fw"></i>
+                                        Shell
+                                        <span class="pull-right medium">
+                                            <em data-bind="text: shell"></em>
+                                        </span>
+                                    </a>
+                                    <a class="list-group-item" href="#">
+                                        <i class="fa fa-users fa-fw"></i>
+                                        Sudoer
+                                        <span class="pull-right medium">
+                                            <em data-bind="text: sudoer"></em>
+                                        </span>
+                                    </a>
+                                    <a class="list-group-item" href="#">
+                                        <i class="fa fa-envelope fa-fw"></i>
+                                        Company
+                                        <span class="pull-right medium">
+                                            <em data-bind="text: company"></em>
+                                        </span>
+                                    </a>
+                                    <a class="list-group-item" href="#">
+                                        <i class="fa fa-globe fa-fw"></i>
+                                        First Name
+                                        <span class="pull-right medium">
+                                            <em data-bind="text: first"></em>
+                                        </span>
+                                    </a>
+                                    <a class="list-group-item" href="#">
+                                        <i class="fa fa-globe fa-fw"></i>
+                                        Last Name
+                                        <span class="pull-right medium">
+                                            <em data-bind="text: last"></em>
+                                        </span>
+                                    </a>
+                                    <a class="list-group-item" href="#">
+                                        <i class="fa fa-envelope fa-fw"></i>
+                                        Email
+                                        <span class="pull-right medium">
+                                            <em data-bind="text: email"></em>
+                                        </span>
+                                    </a>
+                                    <a class="list-group-item" href="#">
+                                        <i class="fa fa-phone fa-fw"></i>
+                                        Phone
+                                        <span class="pull-right medium">
+                                            <em data-bind="text: phone"></em>
+                                        </span>
+                                    </a>
+                                <!-- /ko -->
+                            </div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+            <script src="{{ url_for('static', filename='js/user_details.js') }}"></script>
+{% endblock %}

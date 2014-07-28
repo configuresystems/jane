@@ -37,8 +37,9 @@ def get_logs(page=1, status='', module=''):
         return api.getList(db_name=Logging, page=page, key='logs')
     elif status and not module:
         if status == 'total':
-            return api.getCount(
-                    db_name=Logging,
+            return api.getLogCount(
+                    db_name=LoggingDetails,
+                    field='success',
                     key='logs',
                     )
         return api.getByFields(
