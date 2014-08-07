@@ -98,6 +98,12 @@ class ModuleController():
 
     def create(self, request, created):
         try:
+            if not 'domain_details' in request.json:
+                request.json['domain_details'] = {}
+                request.json['domain_details']['group'] = 'apache'
+                request.json['domain_details']['owner'] = 'apache'
+                request.json['domain_details']['port'] = '80'
+                request.json['domain_details']['document_root'] = '/var/www/vhosts/'+request.json['domain_name']
             from app.core.api_views import Api
             api = Api()
             request.json['created'] = created

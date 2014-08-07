@@ -92,30 +92,31 @@ class ModuleController():
             request.json['created'] = created
             details = self.key + "_details"
             request.json[details][self.key] = request.json[self.relationship]
-            create = api.create(
-                    db_name=self.main_db,
-                    db_join=self.details_db,
-                    relationship=self.relationship,
-                    key=self.key,
-                    **request.json)
+            print request
+            #create = api.create(
+            #        db_name=self.main_db,
+            #        db_join=self.details_db,
+            #        relationship=self.relationship,
+            #        key=self.key,
+            #        **request.json)
             request.json['created'] = dump_datetime(created)
-            domain = self.getByField(field=request.json[self.relationship])[0]
+            #domain = self.getByField(field=request.json[self.relationship])[0]
             #Ansi("domain").run({'user':user})
             from app.core.api_internal.views import Internal
-            internal = Internal()
-            internal.post(
-                     endpoint='logging',
-                     dictionary={
-                         "logging_details":{
-                             "module":"domains",
-                             "action":"create",
-                             "message":"created domain {0}".format(
-                                request.json[self.relationship]
-                                ),
-                             },
-                         "status":"success"}
-                     )
-            return domain
+            #internal = Internal()
+            #internal.post(
+            #         endpoint='logging',
+            #         dictionary={
+            #             "logging_details":{
+            #                 "module":"domains",
+            #                 "action":"create",
+            #                 "message":"created domain {0}".format(
+            #                    request.json[self.relationship]
+            #                    ),
+            #                 },
+            #             "status":"success"}
+            #         )
+            #return domain
         except Exception, e:
             db.session.rollback()
             from app.core.api_internal.views import Internal

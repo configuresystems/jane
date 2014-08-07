@@ -2,7 +2,7 @@
     {% block content %}
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">{{ title }}         <small><a href="/domains/add">Add</a></small></h1>
+                    <h1 class="page-header">{{ title }}</h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -11,7 +11,7 @@
                 <div class="col-lg-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            Domain Listing
+                            Jane's Logs
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
@@ -20,18 +20,18 @@
                                     <thead>
                                         <tr>
                                             <th></th>
-                                            <th>Name</th>
-                                            <th>Domain's Panel</th>
-                                            <th>Website</th>
+                                            <th>Module</th>
+                                            <th>Action</th>
+                                            <th>Message</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="domains">
-                                    <!-- ko foreach: domains -->
+                                    <tbody id="logging">
+                                    <!-- ko foreach: data_set -->
                                         <tr>
                                             <td style="width:1%" data-bind="css:status"><i data-bind="css: icon"></i></td>
-                                            <td><span data-bind="text: name"></span></td>
-                                            <td><a data-bind="attr: {href: uri}">Details</a></td>
-                                            <td><a target="_blank" data-bind="attr: {href: domain_url},text: name"></a></td>
+                                            <td class="text-center" style="width:5%"><i data-bind="css: module"></i></td>
+                                            <td><span data-bind="text: action"></span></td>
+                                            <td><span data-bind="text: message"></span></td>
                                         </tr>
                                     <!-- /ko -->
                                     </tbody>
@@ -46,5 +46,5 @@
                 <!-- /.col-lg-12 -->
             </div>
             <!-- /.row -->
-            <script src="{{ url_for('static', filename='js/domain_list.js') }}"></script>
+            <script src="{{ url_for('static', filename='js/logging_list.js') }}"></script>
 {% endblock %}

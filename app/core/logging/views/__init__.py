@@ -1,5 +1,5 @@
 from app.core.logging import Logging, LoggingDetails
-from flask import Blueprint, jsonify, make_response, url_for, abort, request
+from flask import Blueprint, jsonify, make_response, url_for, abort, request, render_template
 from app import app, db
 import datetime
 import json
@@ -18,6 +18,7 @@ def make_public_log(self, item):
             new[field] = item[field]
     return new
 
+web = Blueprint('web_logs', __name__)
 mod = Blueprint('logging', __name__, url_prefix='/api')
 @mod.route('/logging', methods=['GET'])
 @mod.route('/logging/<int:page>', methods=['GET'])
@@ -68,4 +69,21 @@ def create_log():
     create = api.create(db_name=Logging, db_join=LoggingDetails, relationship='status', key='logging', **request.json)
     request.json['logging_details']['timestamp'] = str(request.json['logging_details']['timestamp'])
     return jsonify({'logs':request.json})
+
+@web.route('/logging', methods=['GET'])
+@web.route('/logging/<int:page>', methods=['GET'])
+def logging(page=1):
+    """ Get a list of all the logs that have been added """
+    return render_template(
+            'logging_list.html',
+            title="Jane's Logs",
+            )
+
+@web.route('/logging/<status>', methods=['GET'])
+def log_status(status):
+    """ Get a list of all the users that have been added """
+    return render_template(
+            'logging_list.html',
+            title=status,
+            )
 
