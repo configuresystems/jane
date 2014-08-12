@@ -19,3 +19,13 @@ class AddDomain(Form):
     document_root = TextField(
             'Document Root',
             )
+
+class HttpVirtualHost(Form):
+    http = TextAreaField(
+            'http',
+            )
+
+class HttpsVirtualHost(Form):
+    https = TextAreaField(
+            'https',
+            )

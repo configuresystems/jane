@@ -1,0 +1,22 @@
+---
+
+- name: create domains document root
+  file: path={{ domain.domain_details.document_root }} owner=root group=root mode=0755 state=directory
+
+- name: create domains base directories
+  file: path={{ domain.domain_details.document_root }}/{{ item }} owner={{ domain.domain_details.owner }} group={{ domain.domain_details.group }} mode=0775 state=directory
+  with_items:
+    - logs
+    - httpdocs
+    - conf
+    - ssl
+    - etc
+
+- name: add http virtual host
+  template: src=http.vhost.conf.j2 dest={{ domain.domain_details.document_root }}/conf/http.{{ domain.domain_name }}.conf
+
+- name: add https virtual host
+  template: src=https.vhost.conf.j2 dest={{ domain.domain_details.document_root }}/conf/https.{{ domain.domain_name }}.conf
+
+- name: add local php
+  template: src=php.ini.j2 dest={{ domain.domain_details.document_root }}/etc/php.ini

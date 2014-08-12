@@ -8,6 +8,7 @@ class Ansi():
 
     def run(self, payload):
         user = []
+        payload = {'domain': payload.json}
         extra_vars="--extra-vars={0}".format(json.dumps(payload))
         print extra_vars
         yaml = 'app/core/ansible/playbooks/{0}.yml'.format(self.play)

@@ -1,0 +1,54 @@
+<VirtualHost *:80>
+        ServerName {{ domain.domain_name }}
+        ServerAlias www.{{ domain.domain_name }}
+        DocumentRoot {{ domain.domain_details.document_root }}
+
+        # Force HTTPS when loading the page
+        #RewriteEngine On
+        #RewriteCond %{HTTPS} off
+        #RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+
+        <Directory {{ domain.domain_details.document_root }}>
+                Options -Indexes +FollowSymLinks -MultiViews
+                AllowOverride All
+        </Directory>
+
+        SetEnv PP_CUSTOM_PHP_INI {{ domain.domain_details.document_root }}/etc/php.ini
+
+        CustomLog {{ domain.domain_details.document_root }}/logs/access.log combined
+        ErrorLog {{ domain.domain_details.document_root }}/logs/error.log
+
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+</VirtualHost>
+
+#<VirtualHost *:443>
+#        ServerName {{ domain.domain_name }}
+#        DocumentRoot {{ domain.domain_details.document_root }}
+#        <Directory {{ domain.domain_details.document_root }}>
+#                Options -Indexes +FollowSymLinks -MultiViews
+#                AllowOverride All
+#        </Directory>
+#
+#        SetEnv PP_CUSTOM_PHP_INI {{ domain.domain_details.document_root }}/etc/php.ini
+#
+#        CustomLog {{ domain.domain_details.document_root }}/logs/ssl-access.log combined
+#        ErrorLog {{ domain.domain_details.document_root }}/logs/ssl-error.log
+#
+#        # Possible values include: debug, info, notice, warn, error, crit,
+#        # alert, emerg.
+#        LogLevel warn
+#
+#        SSLEngine on
+#        SSLCertificateFile    {{ domain.domain_details.document_root }}/ssl/2014-{{ domain.domain_name }}.crt
+#        SSLCertificateKeyFile {{ domain.domain_details.document_root }}/ssl/2014-{{ domain.domain_name }}.key
+#        SSLCertificateChainFile {{ domain.domain_details.document_root }}/ssl/2014-{{ domain.domain_name }}.ca.crt
+#
+#        <FilesMatch "\.(cgi|shtml|phtml|php)$">
+#                SSLOptions +StdEnvVars
+#        </FilesMatch>
+#
+#        BrowserMatch "MSIE [2-6]"                 nokeepalive ssl-unclean-shutdown                 downgrade-1.0 force-response-1.0
+#        BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+#</VirtualHost>

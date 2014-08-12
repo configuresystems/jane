@@ -129,11 +129,50 @@
                 <div id="vhost" class="col-lg-12 tab-pane">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            Edit Virtual Host
+                            Domain's Virtual Host
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            {{ domain.domain[0].domain_details[0]['domain'] }}
+                            <form role="form" name="edit" method="put">
+                                {{ httpvh.hidden_tag() }}
+                                {% for field in httpvh %}
+                                    {% if field.type in ["TextField"] %}
+                                <div id="domain" class="form-group">
+                                    <label>
+                                        {{ field.short_name.replace("_", " ").title() }}
+                                        {% if field.flags.required %}
+                                        <span style="color: red;">*</span>
+                                        {% endif %}
+                                    </label>
+                                    {{ field( value="http", class="form-control input-small", size=60, cols=59, rows=30, style="width:100%;", placeholder="Enter the " + field.short_name.replace("_", " "))  }}
+                                </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </form>
+                        </div>
+                        <div class="panel-body">
+                            <form role="form" name="edit" method="put">
+                                {{ httpsvh.hidden_tag() }}
+                                {% for field in httpsvh %}
+                                    {% if field.type in ["TextField"] %}
+                                <div id="domain" class="form-group">
+                                    <label>
+                                        {{ field.short_name.replace("_", " ").title() }}
+                                        {% if field.flags.required %}
+                                        <span style="color: red;">*</span>
+                                        {% endif %}
+                                    </label>
+                                    {{ field( value=https, class="form-control input-small", size=60, cols=59, rows=30, style="width:100%;", placeholder="Enter the " + field.short_name.replace("_", " "))  }}
+                                </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </form>
+                        </div>
+                        <div class="panel-body">
+                            <pre><textarea rows=30 cols=98%>{{ http }}</textarea></pre>
+                        </div>
+                        <div class="panel-body">
+                            <pre><textarea rows=30 cols=98%>{{ https }}</textarea></pre>
                         </div>
                     </div>
                     <!-- /.panel -->
@@ -145,7 +184,7 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            {{ domain.domain[0].domain_details[0]['domain'] }}
+                            <pre><textarea rows=60 cols=98%>{{ php }}</textarea></pre>
                         </div>
                     </div>
                     <!-- /.panel -->

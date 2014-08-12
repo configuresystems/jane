@@ -1,10 +1,11 @@
 from app.core.logging import Logging
 from app.core.ansible import Ansi
 from app.modules.domains.models import Domains, DomainDetails
+from app.modules.domains.inc import DomainController
 from app.modules.users.inc import DatabaseModel
-from app.modules.domains.forms import AddDomain
-from app.core.common import ModuleController
-from flask import Blueprint, jsonify, make_response, url_for, abort, request, render_template
+from app.modules.domains.forms import AddDomain, HttpVirtualHost, HttpsVirtualHost
+from app.core.common import ModuleController, AttrDict
+from flask import Blueprint, jsonify, make_response, url_for, abort, request, render_template, redirect
 from app import app, db
 import datetime
 import json
@@ -59,26 +60,11 @@ def get_domain(domain_name, page=1):
 
 @mod.route('/domains', methods=['POST'])
 def create_domain():
+    dc = DomainController(request)
+    domain = dc.create()
     #ansi = Ansi("domain")
     """ Create a new domain """
-    if not request.json or not 'domain_name' in request.json:
-        abort(404)
-    if not 'domain_details' in request.json:
-        request.json['domain_details'] = {}
-        request.json['domain_details']['group'] = 'apache'
-        request.json['domain_details']['owner'] = 'apache'
-        request.json['domain_details']['port'] = '80'
-        request.json['domain_details']['document_root'] = '/var/www/vhosts/'+request.json['domain_name']
     # Grab a user and check if it exists.  If it does, kick to 409 response
-    mc = ModuleController(
-            main_db=Domains,
-            details_db=DomainDetails,
-            relationship='domain_name',
-            key='domain',
-            name=request.json['domain_name']
-            )
-    created = datetime.datetime.utcnow()
-    domain = mc.create(request, created)
     return mc.dataAsJson(
             key='domain',
             dictionary=domain
@@ -121,20 +107,38 @@ def domains(page=1):
 def domain(domain):
     """ Get a list of all the users that have been added """
     form = AddDomain()
+    httpvh = HttpVirtualHost()
+    httpsvh = HttpsVirtualHost()
+    dc = DomainController()
+    if httpvh.validate_on_submit:
+        if httpvh.http.data:
+            dc.writeVhost(domain, 'http', httpvh.http.data)
+    if httpsvh.validate_on_submit:
+        if httpsvh.https.data:
+            dc.writeVhost(domain, 'https', httpsvh.https.data)
     return render_template(
             'domain_details.html',
             title=domain,
             form=form,
-            domain=json.loads(get_domain(domain_name=domain).data)
+            domain=json.loads(get_domain(domain_name=domain).data),
+            http=dc.openVhost('http', domain),
+            https=dc.openVhost('https', domain),
+            php=dc.openPhp(domain),
+            httpvh=httpvh,
+            httpsvh=httpsvh
             )
 
-@web.route('/domains/add', methods=['GET', 'POST'])
+@web.route('/domains/add', methods=['GET','POST'])
 def domain_add():
     """ Get a list of all the users that have been added """
     form = AddDomain()
     if form.validate_on_submit:
         if form.domain.data:
-            print form.domain.data
+            request = AttrDict()
+            request.json = {"domain_name":form.domain.data}
+            dc = DomainController(request)
+            dc.create()
+            return redirect(url_for('web_domains.domain', domain=form.domain.data))
     return render_template(
             'domain_add.html',
             title="Add New Domain",

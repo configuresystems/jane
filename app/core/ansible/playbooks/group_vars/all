@@ -1,20 +1,36 @@
 user: {
-    "username": 'boo',
-    'domain': 'ohaiworld.com', 
+    'username': 'example',
+    'domain': 'example.com', 
     'shell': '/bin/bash',
     'created': ['2014-06-29', '16:41:49'], 
     'user_details': 
         [
             {
-                'last': 'doe', 
-                'company': 'Configure Systems', 
-                'phone': '2105554545', 
-                'user': 'boo', 
-                'email': 'bob.doe@c.systems', 
-                'first': 'bob'
+                'last': 'Doe', 
+                'company': 'Jane', 
+                'phone': '5555555555', 
+                'user': 'example', 
+                'email': 'example@example.com', 
+                'first': 'John'
                 }
             ], 
     'sudoer': 1,
-    'password': '0ned4y1w1llbeah4sh'
+    'password': 'Th3 1 4nd oNly!'
     }
 
+domain: {
+    'created': [
+      '2014-08-09',
+      '20:13:21'
+    ],
+    'domain_name': 'example.com',
+    'domain_details': [
+      {
+        'domain': 'example.com',
+        'group': 'apache',
+        'owner': 'apache',
+        'port': '80',
+        'document_root': '/var/www/vhosts/example.com'
+      }
+    ]
+  }

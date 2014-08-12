@@ -1,0 +1,5 @@
+---
+- hosts: local
+  user: root
+  roles:
+    - domain
