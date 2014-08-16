@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 '''
 Demo for SAR parser.
 '''
@@ -5,30 +6,21 @@ Demo for SAR parser.
 import os
 import sys
 import pprint
-import datetime
 
 
 def main():
-    from app.modules.overview.inc.sar.sar import parser
+    from sar import parser
 
-    day = datetime.datetime.today().day
-    year = datetime.datetime.today().year
     sysstat_dir = '/var/log/sa'
-    single_file = ('%s/%s' % (sysstat_dir, 'sar'+str(day)))
+    single_file = ('%s/%s' % (sysstat_dir, 'sar21'))
 
     # Single SAR file parsing
     insar = parser.Parser(single_file)
-    #print(("SAR file date: %s" % (insar.get_filedate())))
-    #print("Content:\n")
-    #pprint.pprint(insar.get_sar_info())
-    li = []
-    sar = insar.get_sar_info()
-    for x in sar['mem']:
-        sar['mem'][x]['time'] = x + ' ' + str(year)
-        li.append(sar['mem'][x])
-    return li
+    print(("SAR file date: %s" % (insar.get_filedate())))
+    print("Content:\n")
+    pprint.pprint(insar.get_sar_info())
 
-    #print(("-" * 78))
+    print(("-" * 78))
 
     # Id you want to test his, please run something like
     #  $ cat /var/log/sa/sar* > sarcombined
