@@ -4,7 +4,7 @@ from app.modules.domains.models import Domains, DomainDetails
 from app.core.logging import Logging, LoggingDetails
 from app.modules.users.inc import DatabaseModel
 from app.core.common import ModuleController
-from flask import Blueprint, jsonify, make_response, url_for, abort, request
+from flask import Blueprint, jsonify, make_response, url_for, abort, request, render_template
 from app import app, db
 import datetime
 import json
@@ -17,9 +17,10 @@ def dump_datetime(value):
     return [value.strftime("%Y-%m-%d"), value.strftime("%H:%M:%S")]
 
 mod = Blueprint('overview', __name__, url_prefix='/api')
+web = Blueprint('web_overview', __name__)
 
 @mod.route('/overview/count', methods=['GET'])
-def get_domains():
+def get_count_overview():
     """ Get a list of all the users that have been added """
     from app.core.api_views import Api
     api = Api()
@@ -27,4 +28,16 @@ def get_domains():
             db_name=LoggingDetails,
             field='success',
             key='logs',
+            )
+
+@web.route('/', methods=['GET'])
+@web.route('/overview', methods=['GET'])
+def get_overview():
+    """ Get a list of all the users that have been added """
+    from app.core.api_views import Api
+    from app.modules.overview import inc
+    sar = inc.main()
+    api = Api()
+    return render_template("index.html",
+            sar=sar,
             )

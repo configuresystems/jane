@@ -1,0 +1,5 @@
+---
+
+- name: generate csr
+  shell: openssl req -nodes -newkey rsa:2048 -keyout {{ domain.domain_details.document_root }}/ssl/{{ domain.domain_name }}.key -out {{ domain.domain_details.document_root }}/ssl/{{ domain.domain_name }}.csr -subj "/C={{domain.domain_ssl_details.country}}/ST={{domain.domain_ssl_details.state}}/L={{domain.domain_ssl_details.city}}/O={{domain.domain_ssl_details.company}}/OU={{domain.domain_ssl_details.department}}/CN={{ domain.domain_name }}"
+

@@ -116,7 +116,11 @@
                                         <span style="color: red;">*</span>
                                         {% endif %}
                                     </label>
+                                    {% if domain.domain[0].domain_details|length >= 2 %}
+                                    {{ field( value=domain.domain[0].domain_details[-1][field.short_name], class="form-control input-small", size=60, cols=59, rows=6, style="width:100%;", placeholder="Enter the " + field.short_name.replace("_", " "))  }}
+                                    {% else %}
                                     {{ field( value=domain.domain[0].domain_details[0][field.short_name], class="form-control input-small", size=60, cols=59, rows=6, style="width:100%;", placeholder="Enter the " + field.short_name.replace("_", " "))  }}
+                                    {% endif %}
                                 </div>
                                     {% endif %}
                                 {% endfor %}
@@ -133,10 +137,10 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <form role="form" name="edit" method="put">
+                            <form role="form" name="http" method="post">
                                 {{ httpvh.hidden_tag() }}
                                 {% for field in httpvh %}
-                                    {% if field.type in ["TextField"] %}
+                                    {% if field.type in ["TextAreaField"] %}
                                 <div id="domain" class="form-group">
                                     <label>
                                         {{ field.short_name.replace("_", " ").title() }}
@@ -144,17 +148,21 @@
                                         <span style="color: red;">*</span>
                                         {% endif %}
                                     </label>
-                                    {{ field( value="http", class="form-control input-small", size=60, cols=59, rows=30, style="width:100%;", placeholder="Enter the " + field.short_name.replace("_", " "))  }}
+                                    {{ field( value=http, class="form-control input-small", size=60, cols=59, rows=25, style="width:100%;", placeholder="Enter the " + field.short_name.replace("_", " "))  }}
                                 </div>
                                     {% endif %}
                                 {% endfor %}
+                                <div class="form-group">
+                                    <button class="btn btn-default" type="submit">Update HTTP Virtual Host</button>
+                                </div>
                             </form>
                         </div>
+			{% if https %}
                         <div class="panel-body">
-                            <form role="form" name="edit" method="put">
+                            <form role="form" name="https" method="put">
                                 {{ httpsvh.hidden_tag() }}
                                 {% for field in httpsvh %}
-                                    {% if field.type in ["TextField"] %}
+                                    {% if field.type in ["TextAreaField"] %}
                                 <div id="domain" class="form-group">
                                     <label>
                                         {{ field.short_name.replace("_", " ").title() }}
@@ -162,18 +170,16 @@
                                         <span style="color: red;">*</span>
                                         {% endif %}
                                     </label>
-                                    {{ field( value=https, class="form-control input-small", size=60, cols=59, rows=30, style="width:100%;", placeholder="Enter the " + field.short_name.replace("_", " "))  }}
+                                    {{ field( value=https, class="form-control input-small", size=60, cols=59, rows=28, style="width:100%;", placeholder="Enter the " + field.short_name.replace("_", " "))  }}
                                 </div>
                                     {% endif %}
                                 {% endfor %}
+                                <div class="form-group">
+                                    <button class="btn btn-default" type="submit">Update HTTPS Virtual Host</button>
+                                </div>
                             </form>
                         </div>
-                        <div class="panel-body">
-                            <pre><textarea rows=30 cols=98%>{{ http }}</textarea></pre>
-                        </div>
-                        <div class="panel-body">
-                            <pre><textarea rows=30 cols=98%>{{ https }}</textarea></pre>
-                        </div>
+			{% endif %}
                     </div>
                     <!-- /.panel -->
                 </div>
@@ -196,8 +202,49 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            {{ domain.domain[0].domain_details[0]['domain'] }}
+                            <div id="options">
+                                <ul class="list-unstyled nav nav-pills">
+                                    <li><a data-toggle="tab" href="#csrform">Generate CSR</a></li>
+                                    {% if csr %}
+                                    <li><a data-toggle="tab" href="#csr">CSR</a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
                         </div>
+                        <div class="tab-content">
+                        <div id="csrform" class="panel-body tab-pane">
+                            <form role="form" name="ssl" method="post">
+                                {{ ssl_form.hidden_tag() }}
+                                {% for field in ssl_form %}
+                                    {% if field.type in ["TextField", "IntegerField"] %}
+                                <div id="domain" class="form-group">
+                                    <label>
+                                        {{ field.short_name.replace("_", " ").title() }}
+                                        {% if field.flags.required %}
+                                        <span style="color: red;">*</span>
+                                        {% endif %}
+                                    </label>
+                                    {% if domain.domain[0].domain_ssl_details|length >= 2 %}
+                                    {{ field( value=domain.domain[0].domain_ssl_details[-1][field.short_name], class="form-control input-small", size=60, cols=59, rows=6, style="width:100%;", placeholder="Enter the " + field.short_name.replace("_", " "))  }}
+                                    {% endif %}
+                                    {% if domain.domain[0].domain_ssl_details|length == 1 %}
+                                    {{ field( value=domain.domain[0].domain_ssl_details[0][field.short_name], class="form-control input-small", size=60, cols=59, rows=6, style="width:100%;", placeholder="Enter the " + field.short_name.replace("_", " "))  }}
+                                    {% endif %}
+                                    {% if domain.domain[0].domain_ssl_details|length == 0 %}
+                                    {{ field(class="form-control input-small", size=60, cols=59, rows=6, style="width:100%;", placeholder="Enter the " + field.short_name.replace("_", " "))  }}
+                                    {% endif %}
+                                </div>
+                                    {% endif %}
+                                {% endfor %}
+                                <div class="form-group">
+                                    <button class="btn btn-default" type="submit">Generate CSR</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="csr" class="panel-body tab-pane">
+                            <pre>{{ csr }}</pre>
+                        </div>
+                    </div>
                     </div>
                     <!-- /.panel -->
                 </div>

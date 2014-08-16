@@ -15,8 +15,9 @@
 - name: add http virtual host
   template: src=http.vhost.conf.j2 dest={{ domain.domain_details.document_root }}/conf/http.{{ domain.domain_name }}.conf
 
-- name: add https virtual host
-  template: src=https.vhost.conf.j2 dest={{ domain.domain_details.document_root }}/conf/https.{{ domain.domain_name }}.conf
+#- name: add https virtual host
+#  template: src=https.vhost.conf.j2 dest={{ domain.domain_details.document_root }}/conf/https.{{ domain.domain_name }}.conf
+#  when: domain.ssl_details
 
 - name: add local php
   template: src=php.ini.j2 dest={{ domain.domain_details.document_root }}/etc/php.ini
