@@ -2,6 +2,7 @@ from flask.ext.sqlalchemy import get_debug_queries
 from app.core.logging import Logging
 from app.core.ansible import Ansi
 from app.core.models import Users, UserDetails
+from app.core.common import ModuleController
 from passlib.hash import sha512_crypt
 from sqlalchemy import func, distinct, exists
 from config import DATABASE_QUERY_TIMEOUT, POSTS_PER_PAGE
@@ -26,8 +27,17 @@ def dump_datetime(value):
 
 
 class DatabaseModel():
-    def __init__(self, username=None):
+    def __init__(self, username=None, request=None):
         self.username = username
+        if request:
+            self.request = request
+            self.mc = ModuleController(
+                    main_db=Users,
+                    details_db=UserDetails,
+                    relationship='username',
+                    key='user',
+                    name=self.request.json['username']
+                    )
         self.page = 1
 
     def make_public_user(self, user):
@@ -76,56 +86,29 @@ class DatabaseModel():
             db.session.rollback()
             abort(500)
 
-    def createUser(self, request, created):
-        try:
-            from app.core.api_views import Api
-            api = Api()
-            request.json['created'] = created
-            request.json['user_details']['user'] = request.json['username']
-            create = api.create(
-                    db_name=Users,
-                    db_join=UserDetails,
-                    relationship='username',
-                    key='user',
-                    **request.json)
-            request.json['created'] = dump_datetime(created)
-            request.json['password'] = self.createShellPassword(request.json['password'])
-            user = self.getUserByUsername(request.json['username'])[0]
-            user['password'] = self.createShellPassword(request.json['password'])
-            Ansi("useradd").run({'user':user})
-            user['password'] = request.json['password']
-            from app.core.api_internal.views import Internal
-            internal = Internal()
-            internal.post(
-                     endpoint='logging',
-                     dictionary={
-                         "logging_details":{
-                             "module":"users",
-                             "action":"create",
-                             "message":"created user {0}".format(
-                                request.json['username']
-                                ),
-                             },
-                         "status":"success"}
-                     )
-        except:
-            db.session.rollback()
-            from app.core.api_internal.views import Internal
-            internal = Internal()
-            internal.post(
-                     endpoint='logging',
-                     dictionary={
-                         "logging_details":{
-                             "module":"users",
-                             "action":"create",
-                             "message":"an error occurred when create the user: {0}".format(
-                                request.json['username']
-                                ),
-                             },
-                         "status":"error"}
-                     )
+    def checkFields(self):
+        if not self.request.json or not 'username' in self.request.json:
+            abort(404)
+        if not 'password' in self.request.json:
+            abort(503)
+        if not 'user_details' in self.request.json:
+            self.request.json['user_details'] = {}
+        if not 'shell' in self.request.json:
+            self.request.json['shell'] = '/bin/false'
+        if not 'domain' in self.request.json:
+            self.request.json['domain'] = 'changeme.com'
+        if not 'sudoer' in self.request.json:
+            self.request.json['sudoer'] = 0
+        return True
+
+    def create(self):
+        created = datetime.datetime.utcnow()
+        if self.checkFields():
+            self.request.json['password'] = sha512_crypt.encrypt(self.request.json['password'])
+            print self.request.json
+            return self.mc.create(self.request, created)
+        else:
             abort(500)
-        return user
 
     def appendUserDetails(self, request):
         try:

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+    {% block content %}
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">{{ title }}</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Edit Domain Details
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <form role="form" name="edit" method="post">
+                                {{ form.hidden_tag() }}
+                                {% for field in form %}
+                                    {% if field.type in ["TextField"] %}
+                                <div id="domain" class="form-group">
+                                    <label>
+                                        {{ field.short_name.replace("_", " ").title() }}
+                                        {% if field.flags.required %}
+                                        <span style="color: red;">*</span>
+                                        {% endif %}
+                                    </label>
+                                    {{ field( class="form-control input-small", size=60, cols=59, rows=6, style="width:100%;", placeholder="Enter the " + field.short_name.replace("_", " "))  }}
+                                </div>
+                                    {% endif %}
+                                {% endfor %}
+                                <div class="form-group">
+                                    <button class="btn btn-default" type="submit">Add User</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-4 -->
+            </div>
+            <!-- /.row -->
+{% endblock %}

@@ -1,10 +1,11 @@
+from app.modules.users.inc import DatabaseModel
+from app.modules.users.forms import AddUser
 from app.core.logging import Logging
 from app.core.ansible import Ansi
 from app.core.models import Users, UserDetails
-from app.modules.users.inc import DatabaseModel
+from app.core.common import ModuleController, AttrDict
 from passlib.hash import sha512_crypt
-from app.core.common import ModuleController
-from flask import Blueprint, jsonify, make_response, url_for, abort, request, render_template
+from flask import Blueprint, jsonify, make_response, url_for, abort, request, render_template, redirect
 from app import app, db
 import datetime
 import json
@@ -63,18 +64,13 @@ def create_user():
     if not request.json or not 'username' in request.json:
         abort(404)
     # Grab a user and check if it exists.  If it does, kick to 409 response
-    mc = ModuleController(
-            main_db=Users,
-            details_db=UserDetails,
-            relationship='username',
-            key='user',
-            name=request.json['username']
+    dc = DatabaseModel(
+            request=request
             )
-    created = datetime.datetime.utcnow()
-    request.json['password'] = sha512_crypt.encrypt(request.json['password'])
-    user = mc.create(request, created)
-    Ansi("useradd").run({'user':user})
-    return mc.dataAsJson(
+    print request.json
+    user = dc.create()
+    #Ansi("useradd").run({'user':user})
+    return dc.dataAsJson(
             key='user',
             dictionary=user
             )
@@ -118,4 +114,24 @@ def user(user):
     return render_template(
             'user_details.html',
             title=user,
+            )
+
+@web.route('/users/add', methods=['GET','POST'])
+def user_add():
+    form = AddUser()
+    if form.validate_on_submit:
+        if form.username.data and \
+                form.password.data:
+            request = AttrDict()
+            request.json = {
+                    "username":form.username.data,
+                    "password":form.password.data
+                    }
+            dc = DatabaseModel(request=request)
+            dc.create()
+            return redirect(url_for('web_users.user', user=form.username.data))
+    return render_template(
+            'user_add.html',
+            title='Add New User',
+            form=form
             )
