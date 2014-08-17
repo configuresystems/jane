@@ -26,10 +26,6 @@ function userList() {
     }
 
     self.ajax(self.userUrl, 'GET').done(function(data) {
-        for (data.users.length == 0) {
-            $('#userlist').hide();
-            $('#adduser').show();
-        }
         for (var i = 0; i < data.users.length; i++) {
             var status = 'success gradeX';
             var icon = 'fa fa-check';
@@ -45,7 +41,11 @@ function userList() {
                 sudoer: ko.observable(data.users[i].sudoer),
                 count: ko.observable(data.count)
             });
-        }
+        };
+        if (data.users.length == 0) {
+            $('#userlist').hide();
+            $('#adduser').show();
+        };
     });
 }
 ko.applyBindings(new userList(), $('#users')[0]);

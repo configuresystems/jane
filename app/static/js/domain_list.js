@@ -40,7 +40,11 @@ function domainList() {
                 domain_url: ko.observable(domain_url),
                 count: ko.observable(data.count)
             });
-        }
+        };
+        if (data.users.length == 0) {
+            $('#domainlist').hide();
+            $('#adddomain').show();
+        };
     });
 }
 ko.applyBindings(new domainList(), $('#domains')[0]);
