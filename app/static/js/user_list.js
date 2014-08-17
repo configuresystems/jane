@@ -27,6 +27,7 @@ function userList() {
 
     self.ajax(self.userUrl, 'GET').done(function(data) {
         for (var i = 0; i < data.users.length; i++) {
+            $('#adduser').hide();
             var status = 'success gradeX';
             var icon = 'fa fa-check';
             var uri = '/users/'+data.users[i].username;

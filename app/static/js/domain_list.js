@@ -27,6 +27,7 @@ function domainList() {
 
     self.ajax(self.domainUrl, 'GET').done(function(data) {
         for (var i = 0; i < data.domains.length; i++) {
+            $('#adddomain').hide();
             var status = 'success gradeX';
             var icon = 'fa fa-check';
             var uri = '/domains/'+data.domains[i].domain_name;
