@@ -58,7 +58,7 @@ $(function() {
     Morris.Area({
         element: 'morris-area-chart',
         data: d,
-        parseTime: false,
+        parseTime: true,
         xkey: 'time',
         ykeys: ['memused', 'memfree'],
         labels: ['memused', 'memfree'],
