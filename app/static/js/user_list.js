@@ -26,6 +26,10 @@ function userList() {
     }
 
     self.ajax(self.userUrl, 'GET').done(function(data) {
+        for (data.users.length == 0) {
+            $('#userlist').hide();
+            $('#adduser').show();
+        }
         for (var i = 0; i < data.users.length; i++) {
             var status = 'success gradeX';
             var icon = 'fa fa-check';
