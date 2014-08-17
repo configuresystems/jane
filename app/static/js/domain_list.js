@@ -42,7 +42,7 @@ function domainList() {
                 count: ko.observable(data.count)
             });
         };
-        if (data.users.length == 0) {
+        if (data.domains.length == 0) {
             $('#domainlist').hide();
             $('#adddomain').show();
         };
