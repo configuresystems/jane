@@ -11,8 +11,10 @@ import datetime
 def main():
     from app.modules.overview.inc.sar.sar import parser
 
-    day = datetime.datetime.today().day
-    year = datetime.datetime.today().year
+    date = datetime.date.today()
+    day = date.day
+    year = date.year
+    month = date.strftime('%m')
     sysstat_dir = '/var/log/sa'
     single_file = ('%s/%s' % (sysstat_dir, 'sar'+str(day)))
 
@@ -24,7 +26,7 @@ def main():
     li = []
     sar = insar.get_sar_info()
     for x in sar['mem']:
-        sar['mem'][x]['time'] = x + ' ' + str(year)
+        sar['mem'][x]['time'] = str(date) + " " + str(x)
         li.append(sar['mem'][x])
     return li
 
